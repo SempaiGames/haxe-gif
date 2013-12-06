@@ -1,0 +1,10 @@
+{
+	"name": "haxe-gif",
+	"url": "https://github.com/fbricker/haxe-gif",
+	"license": "GPL",
+	"contributors":["fbricker"],
+	"tags": ["cross","gif","animated gif","multimedis"],
+	"description": "Animated GIF Support for Haxe.\nThis library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite with the GIF frames and a simple API to play/stop the animation.",
+	"version": "0.1.0",
+	"releasenote": "Initial and working release."
+}
