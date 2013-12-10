@@ -9,6 +9,7 @@ This library is intended to be used either by OpenFL or Flash output, and provid
 Use Example:
 ============
 
+```haxe
 import openfl.Assets;
 import flash.display.Sprite;
 import gif.AnimatedGif;
@@ -28,12 +29,14 @@ class Main extends Sprite {
 		this.addChild(new AnimatedGif(bytes).play());
 	}
 }
+```
 
 How to install:
 ===============
 
+```bash
 haxelib install haxe-gif
-
+```
 
 Licence
 =======
