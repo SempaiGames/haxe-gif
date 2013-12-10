@@ -1,13 +1,13 @@
-package AnimatedGif;
+package gif;
 
 import flash.display.Sprite;
 import flash.display.BitmapData;
 import flash.display.Bitmap;
-import hxpixel.images.gif.GifDecoder;
-import hxpixel.images.gif.GifFrameInfo;
+import gif.images.GifDecoder;
+import gif.images.GifFrameInfo;
 import flash.utils.Timer;
 
-class GifAnim extends Sprite{
+class AnimatedGif extends Sprite{
 
 	private var bmaps:Array<Bitmap>;
 	private var frames:Array<GifFrameInfo>;
@@ -60,7 +60,7 @@ class GifAnim extends Sprite{
 		timer=null;
 	}
 
-	public function play():GifAnim{
+	public function play():AnimatedGif{
 		if(playing) return this;
 		playing=true;
 		timer=new Timer(0,1);
@@ -70,7 +70,7 @@ class GifAnim extends Sprite{
 		return this;
 	}
 
-	public function stop():GifAnim{
+	public function stop():AnimatedGif{
 		if(!playing) return this;
 		playing=false;
 		timer.stop();

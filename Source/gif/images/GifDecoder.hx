@@ -20,16 +20,16 @@
  * THE SOFTWARE.
  */
 
-package hxpixel.images.gif;
+package gif.images;
 
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import haxe.io.Input;
-import hxpixel.bytes.BitReader;
-import hxpixel.bytes.Bits;
-import hxpixel.bytes.BitWriter;
-import hxpixel.bytes.BytesInputWrapper;
-import hxpixel.images.color.Rgb;
+import gif.bytes.BitReader;
+import gif.bytes.Bits;
+import gif.bytes.BitWriter;
+import gif.bytes.BytesInputWrapper;
+import gif.color.Rgb;
  
 enum Error {
     InvalidFormat;

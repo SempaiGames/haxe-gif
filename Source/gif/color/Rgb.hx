@@ -20,96 +20,97 @@
  * THE SOFTWARE.
  */
 
-package hxpixel.images.color;
+package gif.color;
 
-abstract Rgba(Int) from Int to Int
+abstract Rgb(Rgba)
 {
-    inline function new(a:Int)
+    inline function new(a:Rgba)
     {
-        this = a;
+        this = a & 0xFFFFFF;
     }
     
-    public var alpha(get, set) : Int;
     public var red(get, set) : Int;
     public var green(get, set) : Int;
     public var blue(get, set) : Int;
-
     
-	inline function get_alpha() : Int
+    inline function get_red() : Int
     {
-        return (this >> 24) & 0xFF;
-	}
-
-	inline function set_alpha( alpha : Int ) : Int
-    {
-        return this = ((alpha & 0xFF) << 24) | (this & 0xFFFFFF);
-	}
-    
-    inline function get_red():Int
-    {
-        return (this >> 16) & 0xFF;
+        return this.red;
     }
     
 	inline function set_red( red : Int ) : Int
     {
-        return this = ((red & 0xFF) << 16) | (this & 0xFF00FFFF);
+        return (this.red = red);
 	}
     
-    inline function get_green():Int
+    inline function get_green() : Int
     {
-        return (this >> 8) & 0xFF;
+        return this.green;
     }
     
 	inline function set_green( green : Int ) : Int
     {
-        return this = ((green & 0xFF) << 8) | (this & 0xFFFF00FF);
+        return (this.green = green);
 	}
     
-    inline function get_blue():Int
+    inline function get_blue() : Int
     {
-        return this & 0xFF;
+        return this.blue;
     }
     
 	inline function set_blue( blue : Int ) : Int
     {
-        return this = (blue & 0xFF) | (this & 0xFFFFFF00);
+        return (this.blue = blue);
 	}
     
-    public static function fromComponents( red : Int, green : Int, blue : Int, ?alpha : Int = 0xFF) : Rgba
+    public static function fromComponents( red : Int, green : Int, blue : Int ) : Rgb
     {
-        return new Rgba(  limitateComponent(alpha) << 24
-                        | limitateComponent(red)   << 16
+        return new Rgb(   limitateComponent(red) << 16
                         | limitateComponent(green) << 8
                         | limitateComponent(blue)
                         );
     }
     
-    @:op(A + B) static public function add(lhs:Rgba, rhs:Rgba):Rgba
+    @:op(A + B) static public function add( lhs:Rgb, rhs:Rgb ) : Rgb
     {
-        var alpha:Int = lhs.alpha + rhs.alpha;
         var red:Int = lhs.red + rhs.red;
         var green:Int = lhs.green + rhs.green;
         var blue:Int = lhs.blue  + rhs.blue;
         
-        return fromComponents(red, green, blue, alpha);
+        return fromComponents(red, green, blue);
     }
     
-    @:op(A - B) static public function sub(lhs:Rgba, rhs:Rgba):Rgba
+    @:op(A - B) static public function sub( lhs:Rgb, rhs:Rgb ) : Rgb
     {
-        var alpha:Int = lhs.alpha - rhs.alpha;
         var red:Int = lhs.red - rhs.red;
         var green:Int = lhs.green - rhs.green;
         var blue:Int = lhs.blue  - rhs.blue;
         
-        return fromComponents(red, green, blue, alpha);
+        return fromComponents(red, green, blue);
+    }
+    
+    @:from static public inline function fromRgba( rgba : Rgba )
+    {
+        return new Rgb(rgba);
+    }
+    
+    @:to public inline function toRgba() : Rgba
+    {
+        this.alpha = 0xFF;
+        return this;
+    }
+    
+    @:to public inline function toInt() : Int
+    {
+        return this & 0xFFFFFF;
     }
     
     @:to public inline function toString() : String
     {
-        return StringTools.hex(this);
+        return StringTools.hex(this & 0xFFFFFF);
     }
     
-    static function limitateComponent(value:Int) : Int
+    static function limitateComponent( value : Int ) : Int
     {
         return switch(value) {
             case a if (a > 255):

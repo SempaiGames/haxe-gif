@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 
-package hxpixel.images.gif;
+package gif.images;
 
-import hxpixel.images.color.Rgb;
-import hxpixel.images.color.Rgba;
+import gif.color.Rgb;
+import gif.color.Rgba;
 
 enum Version {
     Gif87a;

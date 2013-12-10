@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package hxpixel.bytes;
+package gif.bytes;
 
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
