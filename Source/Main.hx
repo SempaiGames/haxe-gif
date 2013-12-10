@@ -36,12 +36,12 @@ class Main extends Sprite {
 		var bytes:Bytes=Bytes.ofString(Assets.getText("images/anim1.gif"));
 		var gif1=new AnimatedGif(bytes);
 		this.addChild(gif1);
-		gif1.play();
-		gif1.x=200;
+		gif1.y=100; gif1.x=200;
 
-		bytes=haxe.io.Bytes.ofString(Assets.getText("assets/anim2.gif"));
+		bytes=haxe.io.Bytes.ofString(Assets.getText("images/anim2.gif"));
 		this.addChild(new AnimatedGif(bytes).play());
 
+		gif1.play();
 		this.addEventListener(flash.events.Event.ENTER_FRAME,function(e){gif1.rotation++;});
 	}
 }
