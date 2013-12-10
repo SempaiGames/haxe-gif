@@ -58,7 +58,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 
 WebSite: https://github.com/fbricker/haxe-gif
+
 Author: Federico Bricker
+
 copyright: Copyright (c) 2013 SempaiGames (http://www.sempaigames.com)
 
 
