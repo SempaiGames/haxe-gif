@@ -84,7 +84,7 @@ class AnimatedGif extends Sprite{
 		pos=(pos+1)%bmaps.length;
 		if(pos==0) for(i in 1 ... bmaps.length) bmaps[i].visible=false;
 		bmaps[pos].visible=true;
-		return frames[pos].delayTime*100;
+		return frames[pos].delayTime>10?frames[pos].delayTime*10:100;
 	}
 
 	private function timerTick(_){
