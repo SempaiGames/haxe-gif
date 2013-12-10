@@ -9,29 +9,31 @@ This library is intended to be used either by OpenFL or Flash output, and provid
 Use Example:
 ============
 
-import flash.net.URLLoader;
-import flash.events.Event;
+import openfl.Assets;
+import flash.display.Sprite;
 import gif.AnimatedGif;
+import haxe.io.Bytes;
 
-class YourClass extends Sprite {
-	
-	public function addGifImage() {		
-		loader = new URLLoader();
-		loader.dataFormat = flash.net.URLLoaderDataFormat.BINARY;
-		loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
-		loader.addEventListener(Event.COMPLETE, onComplete);
-		loader.load(new URLRequest('http://www.anikaos.com/anime_animated_gifs/hamtaro_anime_animated.gif'));
-	}
+class Main extends Sprite {	
+	public function new () {		
+		super ();
+		var bytes:Bytes=Bytes.ofString(Assets.getText("images/anim1.gif"));
+		var gif1=new AnimatedGif(bytes);
+		this.addChild(gif1);
+		gif1.y=100; gif1.x=200;
+		gif1.play();
+		gif1.rotation=32;
 
-	private function onComplete(e){
-		this.addChild(new AnimatedGif(loader.data).play());
+		bytes=haxe.io.Bytes.ofString(Assets.getText("images/anim2.gif"));
+		this.addChild(new AnimatedGif(bytes).play());
 	}
-
-	public function onError(e){
-		trace('Error: '+e);
-	}
-	
 }
+
+How to install:
+===============
+
+haxelib install haxe-gif
+
 
 Licence
 =======
