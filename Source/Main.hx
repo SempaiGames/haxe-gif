@@ -42,6 +42,6 @@ class Main extends Sprite {
 		this.addChild(new AnimatedGif(bytes).play());
 
 		gif1.play();
-		this.addEventListener(flash.events.Event.ENTER_FRAME,function(e){gif1.rotation++;});
+		this.addEventListener(flash.events.Event.ENTER_FRAME,function(e){gif1.rotation+=3;});
 	}
 }
