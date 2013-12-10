@@ -57,11 +57,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 
-WebSite: https://github.com/fbricker/haxe-gif
-
-Author: Federico Bricker
-
-copyright: Copyright (c) 2013 SempaiGames (http://www.sempaigames.com)
+WebSite: https://github.com/fbricker/haxe-gif | Author: Federico Bricker
+Copyright (c) 2013 SempaiGames (http://www.sempaigames.com)
 
 
 Thanks to & Credits
