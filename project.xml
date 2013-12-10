@@ -4,6 +4,6 @@
 	<app main="Main" path="Export" file="HaxeGifSample" />
 	<source path="Source" />
 	<haxelib name="openfl" />
-	<assets path="Assets" rename="assets" exclude="openfl.svg" />
+	<assets path="Assets/images" rename="images" include="*" />
 	<icon path="Assets/openfl.svg" />
 </project>

@@ -1,7 +1,5 @@
 /**
- * MMedia Ad Network - Haxe Open API
- * Implementation of a generic Millennial Media Ad Request for Mobile Integrations in HAXE.
- * This library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite that you can placed wherever you need on your app.
+ * HaxeGif - Haxe AnimatedGIF for Flash and OpenFL
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,9 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  * 
- * Millennial Media is a registered trademark of Millennial Media, Inc.
- * 
- * @link      https://github.com/fbricker/haxe-mmedia
+ * @link      https://github.com/fbricker/haxe-gif
  * 
  * @license   http://www.gnu.org/licenses/lgpl.html
  * @author    Federico Bricker <fbricker@gmail.com>
@@ -28,27 +24,24 @@
 
 package ;
 
-import flash.net.URLLoader;
-import flash.events.Event;
+import openfl.Assets;
+import flash.display.Sprite;
 import gif.AnimatedGif;
+import haxe.io.Bytes;
 
 class Main extends Sprite {
 	
 	public function new () {		
 		super ();
-		loader = new URLLoader();
-		loader.dataFormat = flash.net.URLLoaderDataFormat.BINARY;
-		loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
-		loader.addEventListener(Event.COMPLETE, onComplete);
-		loader.load(new URLRequest('http://www.anikaos.com/anime_animated_gifs/hamtaro_anime_animated.gif'));
-	}
+		var bytes:Bytes=Bytes.ofString(Assets.getText("images/anim1.gif"));
+		var gif1=new AnimatedGif(bytes);
+		this.addChild(gif1);
+		gif1.play();
+		gif1.x=200;
 
-	private function onComplete(e){
-		this.addChild(new AnimatedGif(loader.data).play());
-	}
+		bytes=haxe.io.Bytes.ofString(Assets.getText("assets/anim2.gif"));
+		this.addChild(new AnimatedGif(bytes).play());
 
-	public function onError(e){
-		trace('Error: '+e);
+		this.addEventListener(flash.events.Event.ENTER_FRAME,function(e){gif1.rotation++;});
 	}
-	
 }
