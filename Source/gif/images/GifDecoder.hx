@@ -61,6 +61,8 @@ class GifDecoder
                     readGraphicControlExtension(bytesInput, gifFrameInfo);
                 } else if (label == 0xFF) {
                     readApplicationExtension(bytesInput, gifFrameInfo);
+                } else if (label == 0xFE) {
+                	readComment(bytesInput, gifFrameInfo);
                 }
                 else {
                     throw Error.UnsupportedFormat;
@@ -154,6 +156,17 @@ class GifDecoder
         if (terminator != 0) {
             throw Error.InvalidFormat;
         }
+    }
+    
+    static function readComment(input:Input, gifFrameInfo:GifFrameInfo)
+    {
+    	//chomp the comment
+    	var b;
+    	do{
+			b=input.readByte()&0xFF;
+			if (b>0) input.read(b);
+		}
+		while(b>0);
     }
     
     static function readApplicationExtension(input:Input, gifFrameInfo:GifFrameInfo)
