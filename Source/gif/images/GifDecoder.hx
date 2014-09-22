@@ -22,6 +22,7 @@
 
 package gif.images;
 
+import haxe.ds.Vector;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import haxe.io.Input;
@@ -30,7 +31,7 @@ import gif.bytes.Bits;
 import gif.bytes.BitWriter;
 import gif.bytes.BytesInputWrapper;
 import gif.color.Rgb;
- 
+
 enum Error {
     InvalidFormat;
     UnsupportedFormat;
@@ -45,45 +46,40 @@ class GifDecoder
         
         readHeader(bytesInput, gifInfo);
         
-
         if(gifInfo.globalColorTableFlag) {
             readGlobalColorTable(bytesInput, gifInfo);
         }
         
         var gifFrameInfo = new GifFrameInfo(gifInfo);
         
-        while(true) {
-            var signature = bytesInput.readByte();            
-            if (signature == 0x21) {
-                var label = bytesInput.readByte();
-                
-                if (label == 0xF9) {
-                    readGraphicControlExtension(bytesInput, gifFrameInfo);
-                } else if (label == 0xFF) {
-                    readApplicationExtension(bytesInput, gifFrameInfo);
-                } else if (label == 0xFE) {
-                	readComment(bytesInput, gifFrameInfo);
-                }
-                else {
-                    throw Error.UnsupportedFormat;
-                }
-            } else if (signature == 0x2C) {
-
-                readImageDescriptor(bytesInput, gifFrameInfo);
-                if (gifFrameInfo.localColorTableFlag) {
-                    readLocalColorTable(bytesInput, gifFrameInfo);
-                }
-
-                readImageData(bytesInput, gifFrameInfo);
-                
-                gifInfo.frameList.push(gifFrameInfo);
-                gifFrameInfo = new GifFrameInfo(gifInfo);
-                
-            } else if (signature == 0x3b) {
-                break;
-            } else {
-                throw Error.InvalidFormat;
-            }
+        while (true) {
+            var signature = bytesInput.readByte();
+			
+			switch (signature) {
+				case 0x21: {					
+					var label = bytesInput.readByte();
+					switch (label) {
+						case 0xf9:	readGraphicControlExtension(bytesInput, gifFrameInfo);
+						case 0xFF:	readApplicationExtension(bytesInput, gifFrameInfo);
+						case 0xfE:	readComment(bytesInput, gifFrameInfo);
+					}
+				}
+				case 0x2C: {
+					readImageDescriptor(bytesInput, gifFrameInfo);
+					if (gifFrameInfo.localColorTableFlag) {
+						readLocalColorTable(bytesInput, gifFrameInfo);
+					}
+					readImageData(bytesInput, gifFrameInfo);
+					gifInfo.frameList.push(gifFrameInfo);
+					gifFrameInfo = new GifFrameInfo(gifInfo);
+				}
+				case 0x3b: {					
+					break;
+				}
+				default: {
+					throw Error.InvalidFormat;
+				}
+			}
         }
         
         return gifInfo;
@@ -162,11 +158,10 @@ class GifDecoder
     {
     	//chomp the comment
     	var b;
-    	do{
+    	do {
 			b=input.readByte()&0xFF;
 			if (b>0) input.read(b);
-		}
-		while(b>0);
+		} while(b>0);
     }
     
     static function readApplicationExtension(input:Input, gifFrameInfo:GifFrameInfo)
@@ -225,104 +220,181 @@ class GifDecoder
             gifFrameInfo.localColorTable.push(readRgb(input));
         }
     }
-    
-    static function readImageData(input:Input, gifFrameInfo:GifFrameInfo) 
-    {
-        var lzwMinimumCodeSize = input.readByte();
-        var size:Int=0;
-        var joinOutput = new BytesOutput();
-        while (true) {
-            var blockSize = input.readByte();
-            if (blockSize == 0) {
-                break;
-            }
-            size+=blockSize;
-            var bytes = input.read(blockSize);
-            joinOutput.writeBytes(bytes, 0, bytes.length);
-        }
-        
-        var joinBytes = joinOutput.getBytes();
-        var bitReader = new BitReader(joinBytes);
-        
-        var codeLength = lzwMinimumCodeSize + 1;
-        var clearCode = 1 << lzwMinimumCodeSize;
-        var endCode = clearCode + 1;
-        var registerNum = endCode + 1;
-        
-        var bitWriter = new BitWriter();
-        var pixelNum = gifFrameInfo.imageWidth * gifFrameInfo.imageHeight;
-        
-        var dictionary = createInitialDictionary(lzwMinimumCodeSize);
-        
-        var firstCode = bitReader.readBits(codeLength);
-        var prefix;
-        
-        if (firstCode.toInt() == clearCode) {
-            prefix = bitReader.readBits(codeLength).subBits(0, lzwMinimumCodeSize);
-        } else {
-            prefix = firstCode.subBits(0, lzwMinimumCodeSize);
-        }
-        
-        var suffix = prefix.copy();
-        var readedPixel = 0;
-        
-        while (readedPixel < pixelNum) {
-            var code;
-            try{
-                code = bitReader.readIntBits(codeLength);
-            }catch(e:Dynamic){
-                break;
-            }
-            if (code == clearCode) {
-                dictionary = createInitialDictionary(lzwMinimumCodeSize);
-                codeLength = lzwMinimumCodeSize + 1;
-                registerNum = endCode + 1;
-                
-                bitWriter.writeBits(prefix);
-                prefix = bitReader.readBits(codeLength).subBits(0, lzwMinimumCodeSize);
-                
-                continue;
-            }
-            
-            if (!dictionary.exists(code)) {
-                bitWriter.writeBits(prefix);
-                
-                suffix = prefix + prefix.subBits(0, lzwMinimumCodeSize);
-                dictionary[registerNum] = suffix;
-                registerNum++;
-                
-                if (registerNum >= (1 << codeLength) && codeLength <= 12) {
-                    codeLength++;
-                }
-                
-                prefix = suffix.copy();
-                
-            } else {
-                bitWriter.writeBits(prefix);
-                suffix = dictionary[code];
-                
-                dictionary[registerNum] = prefix + suffix.subBits(0, lzwMinimumCodeSize);
-                registerNum++;
-                
-                if (registerNum >= (1 << codeLength) && codeLength <= 12) {
-                    codeLength++;
-                }
-                
-                prefix = suffix.copy();
-            }
-            
-            readedPixel = Std.int(bitWriter.length / lzwMinimumCodeSize);
-        }
-        
-        bitWriter.writeBits(prefix);
-        
-        var bytes = bitWriter.getBytes();
-        var decodedBitReader = new BitReader(bytes);
-        for(i in 0 ... readedPixel) {
-            gifFrameInfo.imageData[i] = decodedBitReader.readIntBits(lzwMinimumCodeSize);
-        }
-    }
-    
+	
+	/**
+	 * Reads next variable length block from input.
+	 */
+	static function readBlock(input : Input) : { block : Bytes, bytesWritten : Int }
+	{
+		var blockSize = input.readByte();
+		var block = Bytes.alloc(blockSize);
+		var n = 0;
+		if (blockSize > 0) 
+		{
+			try 
+			{
+				var count = 0;
+				while (n < blockSize) 
+				{
+					input.readBytes(block, n, blockSize - n);
+					if ( (blockSize - n) == -1) break;
+					n += (blockSize - n);
+				}
+			} 
+			catch (e:Error) 
+			{
+				trace('Error: $e');
+			}
+			/*
+			if (n < blockSize) 
+			{
+				status = STATUS_FORMAT_ERROR;
+			}
+			*/
+		}
+		return { block : block, bytesWritten : n };
+	}
+
+	static function readImageData(input : Input, gifFrameInfo : GifFrameInfo)
+	{
+		
+		var NullCode = -1;
+		var MaxStackSize = 4096;
+		
+		var npix:Int = gifFrameInfo.imageWidth * gifFrameInfo.imageHeight;
+		var available:Int;
+		var clear:Int;
+		var code_mask:Int;
+		var code_size:Int;
+		var end_of_information:Int;
+		var in_code:Int;
+		var old_code:Int;
+		var bits:Int;
+		var code:Int;
+		var count:Int;
+		var i:Int;
+		var datum:Int;
+		var data_size:Int;
+		var first:Int;
+		var top:Int;
+		var bi:Int;
+		var pi:Int;
+		var block : Bytes = null;
+		
+		var prefix = new Vector<Int>(MaxStackSize);
+		var suffix = new Vector<Int>(MaxStackSize);
+		var pixelStack = new Vector<Int>(MaxStackSize+1);
+		
+		//  Initialize GIF data stream decoder.
+		data_size = input.readByte();
+		clear = 1 << data_size;
+		end_of_information = clear + 1;
+		available = clear + 2;
+		old_code = NullCode;
+		code_size = data_size + 1;
+		code_mask = (1 << code_size) - 1;
+		for (code in 0...clear)
+		{
+			prefix[code] = 0;
+			suffix[code] = code;
+		}
+		
+		//  Decode GIF pixel stream.
+		datum = bits = count = first = top = pi = bi = 0;
+		
+		i = 0;
+		while (i < npix)
+		{
+			if (top == 0)
+			{
+				if (bits < code_size)
+				{
+					//  Load bytes until there are enough bits for a code.
+					if (count == 0) 
+					{
+						// Read a new data block.
+						var readResult = readBlock(input);
+						count = readResult.bytesWritten;
+						block = readResult.block;
+						if (count <= 0)	break;
+						bi = 0;
+					}
+					datum += (block.get(bi) & 0xff) << bits;
+					bits += 8;
+					bi++;
+					count--;
+					continue;
+				}
+				
+				//  Get the next code.
+				code = datum & code_mask;
+				datum >>= code_size;
+				bits -= code_size;
+				//  Interpret the code
+				if ((code > available) || (code == end_of_information))	break;
+				
+				if (code == clear) 
+				{
+					//  Reset decoder.
+					code_size = data_size + 1;
+					code_mask = (1 << code_size) - 1;
+					available = clear + 2;
+					old_code = NullCode;
+					continue;
+				}
+				if (old_code == NullCode) 
+				{
+					pixelStack[top++] = suffix[code];
+					old_code = code;
+					first = code;
+					continue;
+				}
+				in_code = code;
+				if (code == available) 
+				{
+					pixelStack[top++] = first;
+					code = old_code;
+				}
+				while (code > clear) 
+				{
+					pixelStack[top++] = suffix[code];
+					code = prefix[code];
+				}
+				first = (suffix[code]) & 0xff;
+				
+				//  Add a new string to the string table,
+				
+				if (available >= MaxStackSize) break;
+				pixelStack[top++] = first;
+				prefix[available] = old_code;
+				suffix[available] = first;
+				available++;
+				if (((available & code_mask) == 0) && (available < MaxStackSize)) 
+				{
+					code_size++;
+					code_mask += available;
+				}
+				old_code = in_code;
+				
+			}
+			
+			// Pop a pixel off the pixel stack.
+			top--;
+			gifFrameInfo.imageData[pi++] = pixelStack[top];
+			i++;
+			
+		}
+		
+		for (i in pi...npix)
+		{
+			gifFrameInfo.imageData[i] = 0;	// clear missing pixels
+		}
+		
+		//trace("ultimo: " + input.readByte());
+		input.readByte();
+		
+	}
+	
     static function createInitialDictionary(lzwMinimumCodeSize : Int) : Map<Int, Bits>
     {
         var dictionary = new Map<Int, Bits>();
