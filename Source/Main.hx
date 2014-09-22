@@ -33,12 +33,14 @@ class Main extends Sprite {
 	
 	public function new () {		
 		super ();
-		var bytes:Bytes=Bytes.ofString(Assets.getText("images/anim1.gif"));
+		// # THIS SAMPLE WORKS FOR NATIE TARGETS (as getBytes does not get image bytes on web targets).
+
+		var bytes:Bytes=Assets.getBytes("images/anim1.gif");
 		var gif1=new AnimatedGif(bytes);
 		this.addChild(gif1);
 		gif1.y=100; gif1.x=200;
 
-		bytes=haxe.io.Bytes.ofString(Assets.getText("images/anim2.gif"));
+		bytes=Assets.getBytes("images/anim2.gif");
 		this.addChild(new AnimatedGif(bytes).play());
 
 		gif1.play();

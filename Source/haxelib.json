@@ -5,6 +5,6 @@
 	"contributors":["fbricker"],
 	"tags": ["cross","gif","animated","multimedia"],
 	"description": "Animated GIF Support for Haxe.\nThis library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite with the GIF frames and a simple API to play/stop the animation.",
-	"version": "0.2.0",
-	"releasenote": "Fixed bug when the GIF file had comments (thanks to tesract)"
+	"version": "0.3.1",
+	"releasenote": "LZW decompression algorithm reimplementation"
 }
