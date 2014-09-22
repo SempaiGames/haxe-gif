@@ -62,5 +62,5 @@ WebSite: https://github.com/fbricker/haxe-gif | Author: Federico Bricker | (c) 2
 
 Thanks to & Credits
 =======
-This library is based on Heriet's hxPixel library (https://github.com/heriet/hxPixel)
-The decoding algorithm was ported to haxe by Daniel Uranga (https://github.com/DanielUranga)
+* This library is based on Heriet's hxPixel library (https://github.com/heriet/hxPixel)
+* The decoding algorithm was ported to haxe by Daniel Uranga (https://github.com/DanielUranga)
