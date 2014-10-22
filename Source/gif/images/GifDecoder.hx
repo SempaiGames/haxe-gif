@@ -172,27 +172,41 @@ class GifDecoder
         }
         
         // Application Identifier
-        input.readInt32();
-        input.readInt32();
+        var id1 = input.readInt32();
+        var id2 = input.readInt32();
         
         // Application Authentication Code
-        input.readByte();
-        input.readByte();
-        input.readByte();
+        var auth1 = input.readByte();
+        var auth2 = input.readByte();
+        var auth3 = input.readByte();
         
-        var applicationBlockSize = input.readByte();
-        if (applicationBlockSize == 3) {
-            input.readByte();
-            
-            gifFrameInfo.parent.animationLoopCount = input.readInt16();
-            
-        } else {
-            throw UnsupportedFormat;
+        if (id1==1346454355 && id2==808333893 && //NETSCAPE
+        	auth1 == 0x32 && auth2 == 0x2e && auth3 == 0x30) //2.0
+        {
+        	var applicationBlockSize = input.readByte();
+	        if (applicationBlockSize == 0x03) {
+	            input.readByte();
+	            
+	            gifFrameInfo.parent.animationLoopCount = input.readInt16();
+	            
+	        } else {
+	        	throw UnsupportedFormat;
+	        }
+	        
+	        var terminator = input.readByte();
+	        if (terminator != 0) {
+	            throw Error.InvalidFormat;
+	        }
         }
-        
-        var terminator = input.readByte();
-        if (terminator != 0) {
-            throw Error.InvalidFormat;
+        else //unknown application extension
+        {
+        	//chomp the unknown extension and try to continue
+        	var b;
+	    	do{
+				b=input.readByte()&0xFF;
+				if (b>0) input.read(b);
+			}
+			while(b>0);
         }
     }
     
