@@ -38,7 +38,7 @@ How to install:
 haxelib install haxe-gif
 ```
 
-Licence
+License
 =======
 http://www.gnu.org/licenses/lgpl.html
 
