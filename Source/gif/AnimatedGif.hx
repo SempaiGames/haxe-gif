@@ -25,27 +25,43 @@ class AnimatedGif extends Sprite{
 		for(gifFrameInfo in frames){
 			var bitmapData=new BitmapData(gifFrameInfo.imageWidth,gifFrameInfo.imageHeight);
 			var rgbaImageData = gifFrameInfo.getRgbaImageData();
-			var x:Int=0;
-			var y:Int=0;
+			var index = 0;
+			if (gifFrameInfo.interlaceFlag)
+			{
+				var startingLine = 0;
+				var lineIncrement = 8;
+				var line = 0;
+				for (pass in 0...4)
+				{
+					switch (pass)
+					{
+						case 0: { startingLine = 0; lineIncrement = 8; }
+						case 1: { startingLine = 4; lineIncrement = 8; }
+						case 2: { startingLine = 2; lineIncrement = 4; }
+						case 3: { startingLine = 1; lineIncrement = 2; }
+					}
+					line = startingLine;
+					while (line < gifFrameInfo.imageHeight)
+					{
+						for (xIndex in 0...gifFrameInfo.imageWidth)
+						{
+							var rgba = rgbaImageData[index];
+							bitmapData.setPixel32(xIndex, line, rgba);
+							index++;
+						}
+						line += lineIncrement;
+					}
+				}
+			}
+			else
+			{
+				for (i in 0...rgbaImageData.length)
+				{
+					var rgba = rgbaImageData[i];
+					bitmapData.setPixel32(Std.int(i % gifFrameInfo.imageWidth), Std.int(i/gifFrameInfo.imageWidth), rgba);
+				}
+			}
 			
-			for(rgba in rgbaImageData){
-				bitmapData.setPixel32(x,y,rgba);
-				x++;
-				if(x==gifFrameInfo.imageWidth){
-					x=0;
-					y++;
-				}
-				if(y>=gifFrameInfo.imageHeight) break;
-			}
-
-			/* ugly patch to avoid broken images on some case - REALLY UGLY */
-			if(x!=0 || y!=gifFrameInfo.imageHeight){
-				for(x in 0 ... gifFrameInfo.imageWidth){
-					bitmapData.setPixel(x,y,0);
-					bitmapData.setPixel(x,y-1,0);
-					bitmapData.setPixel(x,y-2,0);
-				}
-			}
 			var bitmap=new Bitmap(bitmapData);
 			bitmap.x=gifFrameInfo.imageLeftPosition;
 			bitmap.y=gifFrameInfo.imageTopPosition;
@@ -80,7 +96,7 @@ class AnimatedGif extends Sprite{
 	}
 
 	private function nextFrame():Int{
-		if(pos>=0) bmaps[pos].visible=(frames[pos].disposalMothod==1);
+		if(pos>=0) bmaps[pos].visible=(frames[pos].disposalMethod==1);
 		pos=(pos+1)%bmaps.length;
 		if(pos==0) for(i in 1 ... bmaps.length) bmaps[i].visible=false;
 		bmaps[pos].visible=true;

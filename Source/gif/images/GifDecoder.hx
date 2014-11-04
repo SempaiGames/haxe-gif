@@ -141,7 +141,7 @@ class GifDecoder
         }
         var packedFields = input.readByte();
         
-        gifFrameInfo.disposalMothod = (packedFields & 0x1C) >> 2; // 0b00011100
+        gifFrameInfo.disposalMethod = (packedFields & 0x1C) >> 2; // 0b00011100
         gifFrameInfo.userInputFlag = (packedFields & 0x02) == 0x02; // 0b00000010
         gifFrameInfo.transparentColorFlag = (packedFields & 0x01) == 0x01; // 0b00000001
         
@@ -404,7 +404,6 @@ class GifDecoder
 			gifFrameInfo.imageData[i] = 0;	// clear missing pixels
 		}
 		
-		//trace("ultimo: " + input.readByte());
 		input.readByte();
 		
 	}
