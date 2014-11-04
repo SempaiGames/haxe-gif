@@ -59,8 +59,30 @@ class GifInfo
         frameList = [];
     }
     
-    public function get_numFrames() : Int
+    function get_numFrames() : Int
     {
         return frameList.length;
     }
+	
+	public function toString() : String
+	{
+		var str = "\n{\n";
+		str += '  logicalScreenWidth=$logicalScreenWidth\n';
+		str += '  logicalScreenHeight=$logicalScreenHeight\n';
+		str += '  globalColorTableFlag=$globalColorTableFlag\n';
+		str += '  colorResolution=$colorResolution\n';
+		str += '  sortFlag=$sortFlag\n';
+		str += '  sizeOfGlobalTable=$sizeOfGlobalTable\n';
+		str += '  backgroundColorIndex=$backgroundColorIndex\n';
+		str += '  pixelAspectRaito=$pixelAspectRaito\n';
+		str += '  frames = \n';
+		str += '  [\n';
+		for (f in frameList)
+		{
+			str += '    disposalMethod=${f.disposalMethod}, interlaceFlag=${f.interlaceFlag}, ${f.sortFlag}\n';
+		}
+		str += '  ]\n';
+		str += "}";
+		return str;
+	}
 }

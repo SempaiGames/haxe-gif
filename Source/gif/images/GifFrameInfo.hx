@@ -30,7 +30,7 @@ class GifFrameInfo
     public var parent: GifInfo;
     
     /* Graphic Control Extension */
-    public var disposalMothod: Int;
+    public var disposalMethod: Int;
     public var userInputFlag: Bool;
     public var transparentColorFlag: Bool;
     public var delayTime: Int;
