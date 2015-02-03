@@ -1,13 +1,11 @@
-haxe-gif
-========
+#haxe-gif
 
 Haxe Animated Gif Support Library
 
 Implementation of a generic Animated GIF decoder in HAXE.
 This library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite with the GIF frames and a simple API to play/stop the animation.
 
-Use Example:
-============
+###Use Example:
 
 ```haxe
 import openfl.Assets;
@@ -31,15 +29,13 @@ class Main extends Sprite {
 }
 ```
 
-How to install:
-===============
+###How to install:
 
 ```bash
 haxelib install haxe-gif
 ```
 
-License
-=======
+###License
 
 The MIT License (MIT) - [LICENSE.md](LICENSE.md)
 
@@ -48,7 +44,7 @@ Copyright &copy; 2013 SempaiGames (http://www.sempaigames.com)
 Author: Federico Bricker
 
 
-Thanks to & Credits
-=======
+###Thanks to & Credits
+
 * This library is based on Heriet's hxPixel library (https://github.com/heriet/hxPixel)
 * The decoding algorithm was ported to haxe by Daniel Uranga (https://github.com/DanielUranga)
