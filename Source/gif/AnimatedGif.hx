@@ -79,7 +79,7 @@ class AnimatedGif extends Sprite{
 	public function play():AnimatedGif{
 		if(playing) return this;
 		playing=true;
-		timer=new Timer(0,1);
+		timer=new Timer(10,0);
 		timer.addEventListener(flash.events.TimerEvent.TIMER, timerTick);
 		timer.delay=nextFrame();
 		timer.start();
