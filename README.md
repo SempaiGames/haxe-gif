@@ -5,6 +5,9 @@ Haxe Animated Gif Support Library
 Implementation of a generic Animated GIF decoder in HAXE.
 This library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite with the GIF frames and a simple API to play/stop the animation.
 
+Assets Format:
+	<assets type="binary" path="Assets/images" rename="images" include="*.gif"/>
+
 ###Use Example:
 
 ```haxe
@@ -16,7 +19,7 @@ import haxe.io.Bytes;
 class Main extends Sprite {	
 	public function new () {		
 		super ();
-		var bytes:Bytes=Bytes.ofString(Assets.getText("images/anim1.gif"));
+		var bytes:Bytes=Assets.getBytes("images/anim1.gif");
 		var gif1=new AnimatedGif(bytes);
 		this.addChild(gif1);
 		gif1.y=100; gif1.x=200;
