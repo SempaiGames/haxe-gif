@@ -6,9 +6,8 @@ Implementation of a generic Animated GIF decoder in HAXE.
 This library is intended to be used either by OpenFL or Flash output, and provides you with a Sprite with the GIF frames and a simple API to play/stop the animation.
 
 Assets Format:
-	<!--
-	<assets type="binary" path="Assets/images" rename="images" include="*.gif"/>
-    -->
+	\<assets type="binary" path="Assets/images" rename="images" include="*.gif"/>
+   
 ###Use Example:
 
 ```haxe
